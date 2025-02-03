@@ -9,6 +9,7 @@ import model.entities.Seller;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
@@ -56,17 +57,8 @@ public class SellerDaoJDBC implements SellerDao {
 
                 if(rs.next()){
 
-                    Department dep = new Department();
-                    Seller newSeller = new Seller();
-
-                    dep.setId(rs.getInt("DepartmentId"));
-                    dep.setName(rs.getString("DepName"));
-
-                    newSeller.setId(rs.getInt("Id"));
-                    newSeller.setName(rs.getString("Name"));
-                    newSeller.setEmail(rs.getString("Email"));
-                    newSeller.setBirthDate(rs.getDate("BirthDate"));
-                    newSeller.setBaseSalary(rs.getDouble("BaseSalary"));
+                    Department dep = instantiateDepartment(rs);
+                    Seller newSeller = instantiateSeller(rs);
                     newSeller.setDepartment(dep);
 
                     return newSeller;
@@ -83,6 +75,39 @@ public class SellerDaoJDBC implements SellerDao {
         }
 
     }
+
+    private Department instantiateDepartment(ResultSet rs) throws SQLException {
+        return new Department(rs.getString("Name"), rs.getInt("Id"));
+    }
+
+    private Seller instantiateSeller(ResultSet rs) throws SQLException{
+        return new Seller(rs.getInt("Id"), rs.getString("Name"), rs.getString("Email"), rs.getDate("BirthDate"), rs.getDouble("BaseSalary"), null);
+    }
+
+//    private Seller instantiateSeller(ResultSet rs) throws SQLException{
+//
+//        Seller s = new Seller();
+//
+//        s.setId(rs.getInt("Id"));
+//        s.setName(rs.getString("Name"));
+//        s.setEmail(rs.getString("Email"));
+//        s.setBirthDate(rs.getDate("BirthDate"));
+//        s.setBaseSalary(rs.getDouble("BaseSalary"));
+//
+//        return s;
+//
+//    }
+
+//    private Department instantiateDepartment(ResultSet rs) throws SQLException {
+//
+//        Department d = new Department();
+//
+//        d.setName(rs.getString("Name"));
+//        d.setId(rs.getInt("Id"));
+//
+//        return d;
+//
+//    }
 
     @Override
     public List<Seller> findAll() {
